@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Journeys";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    
+</style>
+<div id="load" style="display:none;">
+    <img src="~/gif/loading.gif" style="width:50px !important" />
+</div>
+
+ 
+
+    <div class="row" style="background-color:#FEFEFE; margin-top:2%;">
+        <div class="col-xs-12">
+            <div class="card">
+                <div class="card-header" style="background-color:#2F4EB4">
+                    <div class="row">
+                        <div class="col-2 mt-2">
+                            <i class="fa-solid fa-arrow-left fa-2x" onclick="history.back();" style="color:white;"></i>
+                        </div>
+                        <div class="col-8">
+                            <h6 class="card-title" id="txtLocation" style="text-align:center;color:white"></h6>
+                            <h6 class="card-title" id="txtDate" style="text-align:center;color:white"></h6>
+
+                        </div>
+                        <div class="col-2">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" style="background-color:#F4F4F4" id="_partialJourneyList">
+                </div>
+
+            </div>
+        </div>
+    </div>
+ 
+
+@section Scripts {
+
+
+    <script>
+        $(document).ready(function () {
+
+
+
+            var res = JSON.parse(localStorage.getItem("SearchedJourneyData"));
+
+            console.log(res.originId, res.origin, res.destinationId, res.destination, res.date);
+            // Yeni tarih formatı
+            var newFormatDepartureDate = moment(res.date, "DD.MM.YYYY").format("YYYY.MM.DD");
+
+            $.ajax({
+                method: "POST",
+                url: '/Home/GetBusJourneys',
+                // contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: { originid: res.originId, destinationid: res.destinationId, departuredate: newFormatDepartureDate },
+                beforeSend: function () {
+                    $.blockUI.defaults.css = {
+                        padding: 0,
+                        margin: 0,
+                        width: '30%',
+                        top: '40%',
+                        left: '35%',
+                        textAlign: 'center',
+                        cursor: 'wait'
+                    };
+                    $.blockUI({ message: $('#load') });
+                }
+            }).done(function (d) {
+
+                if (d.failed == true) {
+                    swal({
+                        title: "",
+                        text: d.message.value,
+                        icon: "error",
+                        button: "Ok",
+                    });
+
+
+                } else {
+
+                    var res = JSON.parse(localStorage.getItem("SearchedJourneyData"));
+                    if (res != null) {
+                        $("#txtLocation").text(res.origin + "-" + res.destination);
+
+
+                        var formattedDate = moment(res.date, "DD.MM.YYYY").locale('tr').format("DD MMMM dddd");
+
+                        $("#txtDate").text(formattedDate);
+                    }
+                    $("#_partialJourneyList").html(d);
+                }
+
+            }).fail(function (xhr) {
+                debugger;
+
+                if (xhr.status == 403 || xhr.status == 401 || xhr.status == 404) {
+
+                    window.location.href = "/Account/AccessDenied";
+                }
+            }).always(function () {
+                $.unblockUI();
+            });
+
+        });
+    </script>
+}

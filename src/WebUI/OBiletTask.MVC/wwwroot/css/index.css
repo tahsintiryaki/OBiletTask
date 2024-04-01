@@ -1,0 +1,49 @@
+#originresult {
+    position: static;
+    width: 100%;
+    cursor: pointer;
+    overflow-y: auto;
+    max-height: 400px;
+    box-sizing: border-box;
+    z-index: 1001;
+}
+
+#destinationresult {
+    position: static;
+    width: 100%;
+    cursor: pointer;
+    overflow-y: auto;
+    max-height: 400px;
+    box-sizing: border-box;
+    z-index: 1001;
+}
+
+.link-class:hover {
+    background-color: #f1f1f1;
+}
+
+.selected-items {
+    margin-top: 20px;
+}
+
+.selected-email {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.remove-btn {
+    cursor: pointer;
+    margin-left: 5px;
+    color: red;
+}
+.custom-column {
+    display: inline-block;
+    margin-right: 0px; /* Ýstenilen boþluk deðeri */
+}
+
+.textColor {
+    color: blue
+}

@@ -1,0 +1,30 @@
+.sweet-warning {
+    background-color: yellow;
+   
+}
+
+.sweet-danger {
+    background-color: red;
+}
+.sweet-success {
+    background-color: green;
+}
+
+/*.sweet-warning:not([disabled]):hover{
+ #hover here
+}*/
+
+.sweet-warning:hover {
+    background-color:purple ;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.swal-button--danger:not([disabled]) {
+    background-color: #27c177 !important;
+}
+
+.swal-button--cancel:not([disabled]){
+    background-color:#e41717 !important;
+    color:white!important;
+}

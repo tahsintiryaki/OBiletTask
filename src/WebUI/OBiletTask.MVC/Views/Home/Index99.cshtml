@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    // Layout = null;
+}
+<style>
+
+    .select2-container .select2-selection--single {
+        min-height: 40px; /* Yükseklik değerini istediğiniz gibi ayarlayabilirsiniz */
+        line-height: 40px; /* Yüksekliğin yarısı kadar line height */
+        text-align: center;
+    }
+
+    #select2-origin-container {
+        min-height: 40px; /* Yükseklik değerini istediğiniz gibi ayarlayabilirsiniz */
+        line-height: 40px; /* Yüksekliğin yarısı kadar line height */
+        text-align: center;
+    }
+
+    #select2-destination-container {
+        min-height: 40px; /* Yükseklik değerini istediğiniz gibi ayarlayabilirsiniz */
+        line-height: 40px; /* Yüksekliğin yarısı kadar line height */
+        text-align: center;
+    }
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<div class="text-center">
+    <h1 class="display-4">Hoşgeldiniz</h1>
+
+    <div class="row row-sm" style="margin-top:2%;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row col-12">
+                        <div class="col-6">
+                            <h3 class="card-title" style="text-align:end">obilet Otobüs</h3>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row" dis>
+
+                        <div class="col-md-3">
+                            <h5><b>Kalkış Noktası</b></h5>
+
+
+                            <select class="js-example-basic-single loading" id="origin" name="state">
+                            </select>
+
+
+                        </div>
+                        <div class="col-md-1" style="margin-top:3%">
+                            <i class="fa fa-exchange fa-2x" onclick="SwapLocation()" aria-hidden="true"></i>
+                        </div>
+                        <div class="col-md-3">
+                            <h5><b>Varış Noktası</b></h5>
+                            <select class="js-example-basic-single loading" id="destination" name="state">
+                            </select>
+
+                        </div>
+                        <div class="col-md-2 mt-2">
+                            <label for="datepicker">Gidiş Tarihi</label>
+                            <input type="text" class="form-control" id="datepicker">
+                        </div>
+                        <div class="col-md-1 mt-4">
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="option" id="bugunRadio" value="bugun">
+                                <label class="form-check-label" for="bugunRadio">Bugün</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="option" id="yarınRadio" value="yarın">
+                                <label class="form-check-label" for="yarınRadio">Yarın</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2" id="divSave" style="display:inline;">
+                            <button type="button" id="btnSearch" class="btn btn-primary" onclick="SaveCountryAdmin()" style="background-color:#fd6700 !important; border-color:#fd6700 !important; float:right;margin-top: 2.5rem !important; display:block; width:100%;}">
+                                Otobüs Ara
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+<div id="load" style="display:none;">
+    @* <div style="font-size:40px;">S</div>
+    <div style="font-size:40px;">G</div>
+    <div style="font-size:40px;">S</div> *@
+    <img src="~/gif/loading.gif" />
+</div>
+
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+
+            $('.js-example-basic-single').select2({ width: '100%' });
+        });
+
+        var text = "";
+        // document.addEventListener('keydown', function (event) {
+        //     // Kullanıcının bastığı tuşun karakter değerini al
+        //     var pressedKey = event.key;
+           
+
+        //     console.log("Kullanıcının bastığı tuş: " + pressedKey);
+        //     $('.select2-search__field').on('input', function () {
+        //         var searchText = $(this).val();
+        //         if (searchText.length > 0) {
+        //             text = searchText;
+        //             console.log("Input içindeki yazı: " + searchText);
+
+        //         }
+
+        //     });
+        
+
+
+        //     // Burada istediğiniz işlemleri gerçekleştirebilirsiniz
+        // }, true);
+
+
+        $('#origin').on('select2:open', function (e) {
+            // Select2 açıldığında önceki değeri sakla
+            previousValue = $(this).val();
+        }).on('select2:select', function (e) {
+            var originCurrentValue = $(this).val();
+
+            var destinationValue = $('#destination').val();
+            if (originCurrentValue == destinationValue) {
+                $('#origin').val(previousValue).trigger('change');
+                alert("Kalkış ve varış noktası aynı seçilemez");
+            }
+
+        });
+        $('#destination').on('select2:open', function (e) {
+            // Select2 açıldığında önceki değeri sakla
+            previousValue = $(this).val();
+        }).on('select2:select', function (e) {
+            var destinationCurrentValue = $(this).val();
+
+            var originValue = $('#origin').val();
+            if (destinationCurrentValue == originValue) {
+                $('#destination').val(previousValue).trigger('change');
+                alert("Kalkış ve varış noktası aynı seçilemez");
+            }
+
+        });
+
+        function SwapLocation() {
+            var selected1 = $('#origin').val();
+            var selected2 = $('#destination').val();
+
+
+
+            // İlk seçili elemanı değiştir
+            $('#origin').val(selected2).trigger('change');
+
+            // İkinci seçili elemanı değiştir
+            $('#destination').val(selected1).trigger('change');
+
+
+        }
+        function datepickerInit() {
+            // Yarının tarihini al
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            $('#datepicker').datepicker({
+                language: 'tr', // Türkçe dil desteği ekleniyor
+                autoclose: true, // Tarih seçildiğinde datepicker'ı otomatik olarak kapatmak için
+                startDate: 'today' // Yarının tarihini varsayılan olarak seçiyor
+            });
+
+            // Bugün ve Yarın radio düğmelerine tıklandığında ilgili tarih seçilsin
+            $('#bugunRadio').click(function () {
+                $('#datepicker').datepicker('setDate', new Date());
+            });
+
+            $('#yarınRadio').click(function () {
+                $('#datepicker').datepicker('setDate', tomorrow);
+            });
+            // Varsayılan olarak yarın radio düğmesini seçili hale getir
+            document.getElementById('yarınRadio').checked = true;
+            // Yarının tarihini vurgulamak için
+            $('#datepicker').datepicker('setDate', tomorrow);
+        }
+        $(document).ready(function () {
+
+            datepickerInit();
+
+            $.ajax({
+                method: "POST",
+                url: '/Home/GetAllBusLocations',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: {},
+                beforeSend: function () {
+                    // $.blockUI.defaults.css = {
+                    //     padding: 0,
+                    //     margin: 0,
+                    //     width: '30%',
+                    //     top: '40%',
+                    //     left: '35%',
+                    //     textAlign: 'center',
+                    //     cursor: 'wait'
+                    // };
+                    // $.blockUI({ message: $('#load') });
+                }
+            }).done(function (d) {
+
+                if (d.failed == false) {
+                    $.each(d.data, function (index, item) {
+                        var $optionOrigin = $('<option>', {
+                            value: item.id,
+                            text: item.name
+                        });
+
+                        $('#origin').append($optionOrigin);
+
+                        var $optionDestination = $('<option>', {
+                            value: item.id,
+                            text: item.name
+                        });
+                        $('#destination').append($optionDestination);
+
+                    });
+
+                    $('#origin').val(d.data[0].id); // Select the option with a value of '1'
+                    $('#origin').trigger('change'); // Notify any JS components that the value change
+
+                    $('#destination').val(d.data[2].id); // Select the option with a value of '1'
+                    $('#destination').trigger('change'); // Notify any JS components that the value change
+
+
+                } else {
+                    swal({
+                        title: "",
+                        text: d.message.value,
+                        icon: "error",
+                        button: "Ok",
+                    });
+                }
+
+            }).fail(function (xhr) {
+                debugger;
+                if (xhr.status == 403 || xhr.status == 401 || xhr.status == 404) {
+
+                    window.location.href = "/Account/AccessDenied";
+                }
+            }).always(function () {
+                // $.unblockUI();
+            });
+
+
+            // debugger;
+            // var dataFromSession = '@Html.Raw(ViewBag.SessionId)';
+            // var dataFromDevice = '@Html.Raw(ViewBag.DeviceId)';
+
+            // // Local storage'a yazma
+            // localStorage.setItem("MyDataSessionId", dataFromSession);
+            // localStorage.setItem("MyDataDevice", dataFromDevice);
+        });
+
+
+
+
+    </script>
+}

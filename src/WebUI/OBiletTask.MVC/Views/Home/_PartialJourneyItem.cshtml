@@ -1,0 +1,58 @@
+﻿@model List<OBiletTask.Application.ViewModel.GetJourneys.GetJourneysViewModel>
+<style>
+  
+</style>
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+
+        <div class="row mb-3" style="border: 1px solid gray; border-radius: 10px;">
+            <div class="row">
+
+                <div class="col-6">
+                    <div class="custom-column">
+                        <span class="textColor">Kalkış</span>
+                        <h5><b class="textColor">@item?.Departure.ToString("HH:mm") =></b></h5>
+                    </div>
+                    <div class="custom-column">
+                        <span class="textColor">Varış</span>
+                        <h5><b class="textColor">@item?.Arrival.ToString("HH:mm")</b></h5>
+                    </div>
+                </div>
+
+
+                <div class="col-6">
+                    <button type="button" id="btnSearch" class="btn btn-primary mt-4" style="background-color:#D33F3C !important; float:right; border-color:#D33F3C !important;}">
+                        @item?.Price @item?.Currency
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-10">
+                    <span>@item?.Origin - @item?.Destination</span>
+                </div>
+
+
+            </div>
+
+
+        </div>
+    }
+
+}
+else
+{
+
+    <div class="row mb-3" style="border: 1px solid gray; border-radius: 10px;">
+        <div class="row">
+            <span>Kayıt Bulunamadı</span>
+
+
+        </div>
+    </div>
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
