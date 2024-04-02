@@ -212,14 +212,14 @@ $(document).ready(function () {
                     listItem += item.name;
 
                     listItem += '</li>';
-                    $('#originresult').append(hiddenInput + listItem);
+                    $('#originresult').append(listItem);
                     $('#origin').val(d.data[0].name);
                     $('#originId').val(d.data[0].id);
                     $("#originresult").hide();
 
 
 
-                    $('#destinationresult').append(hiddenInput + listItem);
+                    $('#destinationresult').append(listItem);
                     $('#destination').val(d.data[2].name);
                     $('#destinationId').val(d.data[2].id);
                     $("#destinationresult").hide();
@@ -231,7 +231,7 @@ $(document).ready(function () {
 
             } else {
                 swal({
-                    title: "",
+                    title: "Hata",
                     text: d.message,
                     icon: "error",
                     button: "Ok",

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OBiletTask.Application.Dtos.Common.RequestModel;
 using OBiletTask.Application.Dtos.GetJourneys.RequestModel;
+using OBiletTask.Application.Enums;
 using OBiletTask.Application.Interface.Services;
 using OBiletTask.MVC.Extensions;
 using OBiletTask.MVC.Models;
@@ -10,6 +12,8 @@ using System.Diagnostics;
 using System.Text;
 using Task_test.Dtos.GetSession.RequestModel;
 using Task_test.Dtos.GetSession.ResponseModel;
+using UAParser;
+
 
 namespace OBiletTask.MVC.Controllers
 {
@@ -18,64 +22,23 @@ namespace OBiletTask.MVC.Controllers
 
         private readonly IApiTransactionService _apiTransactionService;
 
-        public HomeController(IApiTransactionService apiTransactionService)
+
+        public HomeController(IApiTransactionService apiTransactionService, IHttpContextAccessor httpcontextAccessor)
         {
             _apiTransactionService = apiTransactionService;
+
         }
 
-        public async Task<IActionResult> Index2()
-        {
-            GetSessionRequestModel model = new GetSessionRequestModel
-            {
-                browser = new Browser { name = "Chrome", version = "47.0.0.12" },
-                connection = new Connection { ipaddress = "0.0.0.1", port = "0000" },
-                type = 7
-            };
-            var result = await _apiTransactionService.GetSession(model);
 
-
-            if (HttpContext.Session.Get<Data>("SessionId") is null)
-            {
-
-                HttpContext.Session.Set<Data>("SessionId", result.Data);
-            }
-
-            var get = HttpContext.Session.Get<Data>("SessionId");
-
-
-
-
-
-            ViewBag.SessionId = result.Data.sessionid;
-            ViewBag.DeviceId = result.Data.deviceid;
-            return View();
-        }
 
         public async Task<IActionResult> Index()
         {
-            GetSessionRequestModel model = new GetSessionRequestModel
-            {
-                browser = new Browser { name = "Chrome", version = "47.0.0.12" },
-                connection = new Connection { ipaddress = "0.0.0.1", port = "0000" },
-                type = 7
-            };
-            var result = await _apiTransactionService.GetSession(model);
 
-
+            var result = await _apiTransactionService.GetSession();
             if (HttpContext.Session.Get<Data>("SessionId") is null)
             {
-
                 HttpContext.Session.Set<Data>("SessionId", result.Data);
             }
-
-            var get = HttpContext.Session.Get<Data>("SessionId");
-
-
-
-
-
-            ViewBag.SessionId = result.Data.sessionid;
-            ViewBag.DeviceId = result.Data.deviceid;
             return View();
         }
 
@@ -85,7 +48,7 @@ namespace OBiletTask.MVC.Controllers
             var getSession = HttpContext.Session.Get<Data>("SessionId");
             if (getSession is null)
             {
-                return Json(new { failed = true, message = "Not Found Session Value" });
+                return Json(new { failed = true, message = "User Session Not Found" });
             }
             CommonRequestModel<object> getallBusLocationRequestModel = new()
             {
@@ -95,18 +58,39 @@ namespace OBiletTask.MVC.Controllers
                 DeviceSession = new DeviceSession()
                 {
                     deviceid = getSession.deviceid,
+                    //deviceid = string.Empty,
                     sessionid = getSession.sessionid,
                 }
             };
-            var result = await _apiTransactionService.GetAllBusLocations(getallBusLocationRequestModel);
-            if (result != null)
+            var response = await _apiTransactionService.GetAllBusLocations(getallBusLocationRequestModel);
+            
+            if (response.Status == ApiResponseStatusEnums.Success.ToString())
             {
-                return Json(new { failed = false, data = result.data.Take(7) });
+                return Json(new { failed = false, data = response.Data });
+
             }
             else
             {
-                return Json(new { failed = true, message = "Not Found Session Value" });
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
+
             }
+            //if (response != null)
+            //{
+            //    if (response.status == ApiResponseStatusEnums.Success.ToString())
+            //    {
+            //        return Json(new { failed = false, data = response.data.Take(7) });
+
+            //    }
+            //    else
+            //    {
+            //        return Json(new { failed = true, message = (response.usermessage is null ? "Api tarafýnda hata oluþtu." : response.usermessage) });
+
+            //    }
+            //}
+            //else
+            //{
+            //    return Json(new { failed = true, message = "Api tarafýnda hata oluþtu, Lütfen tekrar deneyiniz!" });
+            //}
 
         }
         [HttpPost]
@@ -129,16 +113,18 @@ namespace OBiletTask.MVC.Controllers
                     sessionid = getSession.sessionid,
                 }
             };
-            var result = await _apiTransactionService.GetAllBusLocations(getallBusLocationRequestModel);
-            if (result != null)
+            var response = await _apiTransactionService.GetAllBusLocations(getallBusLocationRequestModel);
+
+            if (response.Status == ApiResponseStatusEnums.Success.ToString())
             {
-                return Json(new { failed = false, data = result.data });
+                return Json(new { failed = false, data = response.Data });
+
             }
             else
             {
-                return Json(new { failed = true, message = "Not Found Session Value" });
-            }
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
 
+            }
         }
         [HttpPost]
         public async Task<IActionResult> GetBusJourneys(GetBusJourneysRequestData model)
@@ -160,24 +146,23 @@ namespace OBiletTask.MVC.Controllers
                     sessionid = getSession.sessionid,
                 }
             };
-            var result = await _apiTransactionService.GetBusJourneys(getallBusLocationRequestModel);
-            if (result != null)
+            var response = await _apiTransactionService.GetBusJourneys(getallBusLocationRequestModel);
+
+            if (response.Status == ApiResponseStatusEnums.Success.ToString())
             {
-                //return Json(new { failed = false, data = result.data });
-                return PartialView("~/Views/Home/_PartialJourneyItem.cshtml", result);
+                return PartialView("~/Views/Home/_PartialJourneyItem.cshtml", response.Data);
             }
             else
             {
-                return Json(new { failed = true, message = "Not Found Session Value" });
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
+
             }
+
 
         }
         public IActionResult Journeys()
         {
             return View();
         }
-
-
-
     }
 }

@@ -1,6 +1,9 @@
 ﻿
 using AutoMapper;
+using OBiletTask.Application.Dtos.GetBusLocations;
+using OBiletTask.Application.Dtos.GetBusLocations.ResponseModel;
 using OBiletTask.Application.Dtos.GetJourneys.ResponseModel;
+using OBiletTask.Application.ViewModel.GetAllBusLocations;
 using OBiletTask.Application.ViewModel.GetJourneys;
 using System;
 using System.Collections.Generic;
@@ -31,6 +34,10 @@ namespace OBiletTask.Application.Mapping
                  .ForPath(dest => dest.Destination, act => act.MapFrom(src => src.journey.destination))
                  .ForPath(dest => dest.Price, act => act.MapFrom(src => src.journey.originalprice));
 
+            CreateMap<GetBusLocationData, GetBusLocationViewModel>()
+              .ForMember(dest => dest.Id, act => act.MapFrom(src => src.id))
+              .ForMember(dest => dest.Name, act => act.MapFrom(src => src.name));
+            
         }
     }
 }

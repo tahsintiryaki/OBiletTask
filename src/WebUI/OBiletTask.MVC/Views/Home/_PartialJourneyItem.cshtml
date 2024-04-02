@@ -1,8 +1,9 @@
 ﻿@model List<OBiletTask.Application.ViewModel.GetJourneys.GetJourneysViewModel>
+
 <style>
-  
+
 </style>
-@if (Model != null && Model.Count > 0)
+@if (Model != null && Model.Count() > 0)
 {
     foreach (var item in Model)
     {

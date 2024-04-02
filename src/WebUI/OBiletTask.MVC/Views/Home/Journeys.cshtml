@@ -45,7 +45,7 @@
         $(document).ready(function () {
 
 
-
+           
             var res = JSON.parse(localStorage.getItem("SearchedJourneyData"));
 
             console.log(res.originId, res.origin, res.destinationId, res.destination, res.date);
@@ -70,7 +70,7 @@
                     $.blockUI({ message: $('#load') });
                 }
             }).done(function (d) {
-
+                debugger;
                 if (d.failed == true) {
                     swal({
                         title: "",
