@@ -3,6 +3,7 @@ using OBiletTask.Application.Dtos.Common.ResponseModel;
 using OBiletTask.Application.Dtos.GetBusLocations;
 using OBiletTask.Application.Dtos.GetJourneys.RequestModel;
 using OBiletTask.Application.Dtos.GetJourneys.ResponseModel;
+using OBiletTask.Application.ViewModel.GeetSession;
 using OBiletTask.Application.ViewModel.GetAllBusLocations;
 using OBiletTask.Application.ViewModel.GetJourneys;
 using System;
@@ -17,7 +18,7 @@ namespace OBiletTask.Application.Interface.Services
 {
     public interface IApiTransactionService
     {
-        Task<GetSessionResponseModel> GetSession();
+        Task<BaseResponseModel<GetSessionViewModel>> GetSession();
         Task<BaseResponseModel<List<GetBusLocationViewModel>>> GetAllBusLocations(CommonRequestModel<object> model);
         Task<BaseResponseModel<List<GetJourneysViewModel>>> GetBusJourneys(CommonRequestModel<GetBusJourneysRequestData> model);
 

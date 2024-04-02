@@ -20,6 +20,7 @@ using UAParser;
 using OBiletTask.Application.Dtos.Common.ResponseModel;
 using OBiletTask.Application.Enums;
 using OBiletTask.Application.ViewModel.GetAllBusLocations;
+using OBiletTask.Application.ViewModel.GeetSession;
 
 
 namespace OBiletTask.Infrastructure.Services
@@ -77,7 +78,8 @@ namespace OBiletTask.Infrastructure.Services
 
                         }
 
-                        return BaseResponseModel<List<GetJourneysViewModel>>.Error(result.status, result.usermessage);
+                        return BaseResponseModel<List<GetJourneysViewModel>>.Error(result.status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
+                        
 
 
                     }
@@ -137,7 +139,8 @@ namespace OBiletTask.Infrastructure.Services
                         }
                         else
                         {
-                            return BaseResponseModel<List<GetBusLocationViewModel>>.Error(result.status, result.usermessage);
+                      
+                            return BaseResponseModel<List<GetBusLocationViewModel>>.Error(result.status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
                         }
                     }
 
@@ -153,61 +156,84 @@ namespace OBiletTask.Infrastructure.Services
 
         }
 
-        public async Task<GetSessionResponseModel> GetSession()
+        public async Task<BaseResponseModel<GetSessionViewModel>> GetSession()
         {
-            string ipAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            int port = _httpContextAccessor.HttpContext.Connection.LocalPort;
-            string userAgentString = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"];
-
-
-            var uaParser = Parser.GetDefault();
-            ClientInfo clientInfo = uaParser.Parse(userAgentString);
-
-            string browserName = clientInfo.UA.Family; // Tarayıcı adı
-            string browserVersion = clientInfo.UA.Major; // Tarayıcı versiyonu
-
-            GetSessionRequestModel model = new GetSessionRequestModel
+            try
             {
-                browser = new Browser { name = browserName, version = browserVersion },
-                connection = new Connection { ipaddress = ipAddress, port = port.ToString() },
-                type = 7
-            };
-
-            string apiUrl = _configuration["ApiUrls:GetSession"];
+                string ipAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+                int port = _httpContextAccessor.HttpContext.Connection.LocalPort;
+                string userAgentString = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"];
 
 
-            string accessToken = _configuration["ApiBasicToken:Value"];
+                var uaParser = Parser.GetDefault();
+                ClientInfo clientInfo = uaParser.Parse(userAgentString);
+
+                string browserName = clientInfo.UA.Family; // Tarayıcı adı
+                string browserVersion = clientInfo.UA.Major; // Tarayıcı versiyonu
+
+                GetSessionRequestModel model = new GetSessionRequestModel
+                {
+                    browser = new Browser { name = browserName, version = browserVersion },
+                    connection = new Connection { ipaddress = ipAddress, port = port.ToString() },
+                    type = 7
+                };
+
+                string apiUrl = _configuration["ApiUrls:GetSession"];
 
 
-            using (HttpClient client = new HttpClient())
-            {
-
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", accessToken);
+                string accessToken = _configuration["ApiBasicToken:Value"];
 
 
-                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-
-                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-
-
-                if (response.IsSuccessStatusCode)
+                using (HttpClient client = new HttpClient())
                 {
 
-                    string responseContent = await response.Content.ReadAsStringAsync();
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", accessToken);
 
 
-                    var result = JsonConvert.DeserializeObject<GetSessionResponseModel>(responseContent);
-                    return result;
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                    StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-                }
-                else
-                {
-                    return null;
 
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        string responseContent = await response.Content.ReadAsStringAsync();
+
+
+                        var result = JsonConvert.DeserializeObject<GetSessionResponseModel>(responseContent);
+
+
+
+                        if (result.Status == ApiResponseStatusEnums.Success.ToString())
+                        {
+                            var mapping = _mapper.Map<GetSessionViewModel>(result.Data);
+
+                            return BaseResponseModel<GetSessionViewModel>.Success(mapping, result.Status);
+                        }
+                        else
+                        {
+
+                            return BaseResponseModel<GetSessionViewModel>.Error(result.Status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
+                        }
+
+                    }
+                    else
+                    {
+                        return BaseResponseModel<GetSessionViewModel>.Error("ApiError", "Beklenmedik bir hata oluştu");
+
+                    }
                 }
             }
+            catch (Exception)
+            {
+
+                //Log
+                return BaseResponseModel<GetSessionViewModel>.Error("ApiError", "Beklenmedik bir hata oluştu");
+            }
+           
         }
 
 

@@ -6,6 +6,7 @@ using OBiletTask.Application.Dtos.Common.RequestModel;
 using OBiletTask.Application.Dtos.GetJourneys.RequestModel;
 using OBiletTask.Application.Enums;
 using OBiletTask.Application.Interface.Services;
+using OBiletTask.Application.ViewModel.GeetSession;
 using OBiletTask.MVC.Extensions;
 using OBiletTask.MVC.Models;
 using System.Diagnostics;
@@ -35,9 +36,9 @@ namespace OBiletTask.MVC.Controllers
         {
 
             var result = await _apiTransactionService.GetSession();
-            if (HttpContext.Session.Get<Data>("SessionId") is null)
+            if (HttpContext.Session.Get<GetSessionViewModel>("SessionId") is null)
             {
-                HttpContext.Session.Set<Data>("SessionId", result.Data);
+                HttpContext.Session.Set<GetSessionViewModel>("SessionId", (GetSessionViewModel)result.Data);
             }
             return View();
         }
@@ -45,7 +46,7 @@ namespace OBiletTask.MVC.Controllers
         public async Task<IActionResult> GetAllBusLocations()
         {
 
-            var getSession = HttpContext.Session.Get<Data>("SessionId");
+            var getSession = HttpContext.Session.Get<GetSessionViewModel>("SessionId");
             if (getSession is null)
             {
                 return Json(new { failed = true, message = "User Session Not Found" });
@@ -74,30 +75,14 @@ namespace OBiletTask.MVC.Controllers
                 return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
 
             }
-            //if (response != null)
-            //{
-            //    if (response.status == ApiResponseStatusEnums.Success.ToString())
-            //    {
-            //        return Json(new { failed = false, data = response.data.Take(7) });
-
-            //    }
-            //    else
-            //    {
-            //        return Json(new { failed = true, message = (response.usermessage is null ? "Api tarafýnda hata oluþtu." : response.usermessage) });
-
-            //    }
-            //}
-            //else
-            //{
-            //    return Json(new { failed = true, message = "Api tarafýnda hata oluþtu, Lütfen tekrar deneyiniz!" });
-            //}
+             
 
         }
         [HttpPost]
         public async Task<IActionResult> GetBusLocationByText(string searchText)
         {
 
-            var getSession = HttpContext.Session.Get<Data>("SessionId");
+            var getSession = HttpContext.Session.Get<GetSessionViewModel>("SessionId");
             if (getSession is null)
             {
                 return Json(new { failed = true, message = "Not Found Session Value" });
@@ -130,7 +115,7 @@ namespace OBiletTask.MVC.Controllers
         public async Task<IActionResult> GetBusJourneys(GetBusJourneysRequestData model)
         {
 
-            var getSession = HttpContext.Session.Get<Data>("SessionId");
+            var getSession = HttpContext.Session.Get<GetSessionViewModel>("SessionId");
             if (getSession is null)
             {
                 return Json(new { failed = true, message = "Not Found Session Value" });
