@@ -21,218 +21,43 @@ using OBiletTask.Application.Dtos.Common.ResponseModel;
 using OBiletTask.Application.Enums;
 using OBiletTask.Application.ViewModel.GetAllBusLocations;
 using OBiletTask.Application.ViewModel.GeetSession;
+using OBiletTask.Application.Interface.Repositories;
 
 
 namespace OBiletTask.Infrastructure.Services
 {
+    /// <summary>
+    ///Repositorydeki metodlara istekte bulunmadan önce iş kurallarını varsa bu kurallar service tarafında kontrol edilecektir.
+    /// </summary>
     public class ApiTransactionService : IApiTransactionService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+     
+        private readonly IApiTransactionRepository _apiTransactionRepository;
 
 
 
-        public ApiTransactionService(IConfiguration configuration, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ApiTransactionService(IApiTransactionRepository apiTransactionRepository)
         {
-            _configuration = configuration;
-            _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
+          
+            _apiTransactionRepository = apiTransactionRepository;
         }
 
         public async Task<BaseResponseModel<List<GetJourneysViewModel>>> GetBusJourneys(CommonRequestModel<GetBusJourneysRequestData> model)
         {
-            var responseModel = new BaseResponseModel<List<GetJourneysViewModel>>();
-
-            try
-            {
-                string apiUrl = _configuration["ApiUrls:GetBusJourneys"];
-
-                // Mevcut token
-                string accessToken = _configuration["ApiBasicToken:Value"];
-
-                // POST edilecek model
-                using (HttpClient client = new HttpClient())
-                {
-                    // İstek başlığına token'i ekleyin
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", accessToken);
-
-                    // Modeli JSON formatına dönüştürme
-                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                    StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-                    // HTTP POST isteği gönderme
-                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-
-                    // Yanıtın durum kodunu kontrol etme
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Yanıt içeriğini okuma
-                        string responseContent = await response.Content.ReadAsStringAsync();
-
-                        var result = JsonConvert.DeserializeObject<GetBusJourneysResponseModel>(responseContent);
-                        if (result.status == ApiResponseStatusEnums.Success.ToString())
-                        {
-                            var mapping = _mapper.Map<List<GetJourneysViewModel>>(result.data);
-                            return BaseResponseModel<List<GetJourneysViewModel>>.Success(mapping.OrderBy(t => t.Departure).ToList(), result.status);
-
-                        }
-
-                        return BaseResponseModel<List<GetJourneysViewModel>>.Error(result.status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
-                        
-
-
-                    }
-                    else
-                    {
-                        return BaseResponseModel<List<GetJourneysViewModel>>.Error("ApiError", "Beklenmedik bir hata oluştu");
-
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log kaydı
-                return BaseResponseModel<List<GetJourneysViewModel>>.Error("ApiError", "Beklenmedik bir hata oluştu");
-
-            }
-
+            return await _apiTransactionRepository.GetBusJourneys(model);
 
         }
 
         public async Task<BaseResponseModel<List<GetBusLocationViewModel>>> GetAllBusLocations(CommonRequestModel<object> model)
         {
-            try
-            {
-                string apiUrl = _configuration["ApiUrls:GetAllBusLocations"];
-
-
-                string accessToken = _configuration["ApiBasicToken:Value"];
-
-
-                using (HttpClient client = new HttpClient())
-                {
-
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", accessToken);
-
-
-                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                    StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-
-                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Yanıt içeriğini okuma
-                        string responseContent = await response.Content.ReadAsStringAsync();
-
-                        var result = JsonConvert.DeserializeObject<GetBusLocationResponseModel>(responseContent);
-
-                        if (result.status == ApiResponseStatusEnums.Success.ToString())
-                        {
-                            var mapping = _mapper.Map<List<GetBusLocationViewModel>>(result.data);
-
-                            return BaseResponseModel<List<GetBusLocationViewModel>>.Success(mapping, result.status);
-                        }
-                        else
-                        {
-                      
-                            return BaseResponseModel<List<GetBusLocationViewModel>>.Error(result.status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
-                        }
-                    }
-
-                    return BaseResponseModel<List<GetBusLocationViewModel>>.Error("ApiError", "Beklenmedik bir hata oluştu");
-
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log kaydı
-                return BaseResponseModel<List<GetBusLocationViewModel>>.Error("ApiError", "Beklenmedik bir hata oluştu");
-            }
+            return await _apiTransactionRepository.GetAllBusLocations(model);
 
         }
 
         public async Task<BaseResponseModel<GetSessionViewModel>> GetSession()
         {
-            try
-            {
-                string ipAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-                int port = _httpContextAccessor.HttpContext.Connection.LocalPort;
-                string userAgentString = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"];
-
-
-                var uaParser = Parser.GetDefault();
-                ClientInfo clientInfo = uaParser.Parse(userAgentString);
-
-                string browserName = clientInfo.UA.Family; // Tarayıcı adı
-                string browserVersion = clientInfo.UA.Major; // Tarayıcı versiyonu
-
-                GetSessionRequestModel model = new GetSessionRequestModel
-                {
-                    browser = new Browser { name = browserName, version = browserVersion },
-                    connection = new Connection { ipaddress = ipAddress, port = port.ToString() },
-                    type = 7
-                };
-
-                string apiUrl = _configuration["ApiUrls:GetSession"];
-
-
-                string accessToken = _configuration["ApiBasicToken:Value"];
-
-
-                using (HttpClient client = new HttpClient())
-                {
-
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", accessToken);
-
-
-                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                    StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-
-                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        string responseContent = await response.Content.ReadAsStringAsync();
-
-
-                        var result = JsonConvert.DeserializeObject<GetSessionResponseModel>(responseContent);
-
-
-
-                        if (result.Status == ApiResponseStatusEnums.Success.ToString())
-                        {
-                            var mapping = _mapper.Map<GetSessionViewModel>(result.Data);
-
-                            return BaseResponseModel<GetSessionViewModel>.Success(mapping, result.Status);
-                        }
-                        else
-                        {
-
-                            return BaseResponseModel<GetSessionViewModel>.Error(result.Status, result.usermessage is null ? "Api tarafında hata oluştu." : result.usermessage);
-                        }
-
-                    }
-                    else
-                    {
-                        return BaseResponseModel<GetSessionViewModel>.Error("ApiError", "Beklenmedik bir hata oluştu");
-
-                    }
-                }
-            }
-            catch (Exception)
-            {
-
-                //Log
-                return BaseResponseModel<GetSessionViewModel>.Error("ApiError", "Beklenmedik bir hata oluştu");
-            }
+            return await _apiTransactionRepository.GetSession();
+            
            
         }
 

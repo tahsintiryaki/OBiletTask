@@ -1,4 +1,10 @@
-﻿using System;
+﻿using OBiletTask.Application.Dtos.Common.RequestModel;
+using OBiletTask.Application.Dtos.Common.ResponseModel;
+using OBiletTask.Application.Dtos.GetJourneys.RequestModel;
+using OBiletTask.Application.ViewModel.GeetSession;
+using OBiletTask.Application.ViewModel.GetAllBusLocations;
+using OBiletTask.Application.ViewModel.GetJourneys;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +16,8 @@ namespace OBiletTask.Application.Interface.Repositories
 {
     public interface IApiTransactionRepository
     {
-        Task<GetSessionResponseModel> GetSession(GetSessionRequestModel model);
+        Task<BaseResponseModel<GetSessionViewModel>> GetSession();
+        Task<BaseResponseModel<List<GetBusLocationViewModel>>> GetAllBusLocations(CommonRequestModel<object> model);
+        Task<BaseResponseModel<List<GetJourneysViewModel>>> GetBusJourneys(CommonRequestModel<GetBusJourneysRequestData> model);
     }
 }

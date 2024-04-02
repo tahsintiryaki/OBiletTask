@@ -55,7 +55,7 @@
             $.ajax({
                 method: "POST",
                 url: '/Home/GetBusJourneys',
-                // contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+             
                 data: { originid: res.originId, destinationid: res.destinationId, departuredate: newFormatDepartureDate },
                 beforeSend: function () {
                     $.blockUI.defaults.css = {
@@ -70,14 +70,14 @@
                     $.blockUI({ message: $('#load') });
                 }
             }).done(function (d) {
-                debugger;
+              
                 if (d.failed == true) {
                     swal({
                         title: "",
-                        text: d.message.value,
+                        text: d.message,
                         icon: "error",
                         button: "Ok",
-                    });
+                    }).then((value) => { window.location.href = "/Home/Index" });
 
 
                 } else {
@@ -95,7 +95,7 @@
                 }
 
             }).fail(function (xhr) {
-                debugger;
+             
 
                 if (xhr.status == 403 || xhr.status == 401 || xhr.status == 404) {
 

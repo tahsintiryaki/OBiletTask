@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace OBiletTask.Application.Dtos.Common.RequestModel
 {
+    /// <summary>
+    /// Ortak request modelleri olduğu için dinamik bir request model nesnesi oluşturuldu.
+    /// </summary>
     public class CommonRequestModel<T> 
     {
         public T Data { get; set; }

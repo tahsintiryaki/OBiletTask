@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using OBiletTask.Application.Dtos.GetJourneys.RequestModel;
+using OBiletTask.Application.Validator.GetBusLocations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +20,10 @@ namespace OBiletTask.Application
             var assm = Assembly.GetExecutingAssembly();
 
             services.AddAutoMapper(assm);
+            // Register FluentValidation validator with Service Provider.
+            services.AddScoped<IValidator<GetBusJourneysRequestData>, GetBusJourneysRequestDataValidator>();
 
-           
+
 
 
 

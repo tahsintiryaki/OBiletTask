@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OBiletTask.Application.Interface.Repositories;
 using OBiletTask.Application.Interface.Services;
+using OBiletTask.Infrastructure.Repositories;
 using OBiletTask.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
@@ -14,8 +16,8 @@ namespace OBiletTask.Infrastructure
         public static void AddInfrastructureServices(this IServiceCollection serviceCollection)
         {
             #region GetSession
-            //serviceCollection.AddScoped<IApiTransactionRepository, ApiTransactionRepository>();
-            serviceCollection.AddScoped<IApiTransactionService, ApiTransactionService>();
+            serviceCollection.AddTransient<IApiTransactionRepository, ApiTransactionRepository>();
+            serviceCollection.AddTransient<IApiTransactionService, ApiTransactionService>();
             #endregion
         }
     }

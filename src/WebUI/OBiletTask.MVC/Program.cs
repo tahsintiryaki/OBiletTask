@@ -1,6 +1,7 @@
 using OBiletTask.Infrastructure;
 using OBiletTask.Application;
 using Microsoft.Build.Framework;
+using Serilog;
 
 namespace OBiletTask.MVC
 {
@@ -18,7 +19,19 @@ namespace OBiletTask.MVC
             builder.Services.AddApplicationRegistration();
 
             #endregion
+            #region Serilog
+            //Add support to logging with SERILOG
+            //builder.Host.UseSerilog((context, configuration) =>
+            //    configuration.ReadFrom.Configuration(context.Configuration));
 
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
+                .WriteTo.File("Log/logFile.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+            builder.Services.AddLogging(loggingBuilder =>
+        loggingBuilder.AddSerilog(dispose: true)
+    );
+
+            builder.Host.UseSerilog();
+            #endregion
 
 
             builder.Services.AddSession(options =>
@@ -41,6 +54,7 @@ namespace OBiletTask.MVC
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
+
 
             app.UseAuthorization();
 

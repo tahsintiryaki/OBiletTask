@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,6 +10,7 @@ using OBiletTask.Application.Interface.Services;
 using OBiletTask.Application.ViewModel.GeetSession;
 using OBiletTask.MVC.Extensions;
 using OBiletTask.MVC.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text;
 using Task_test.Dtos.GetSession.RequestModel;
@@ -22,19 +24,21 @@ namespace OBiletTask.MVC.Controllers
     {
 
         private readonly IApiTransactionService _apiTransactionService;
+        private IValidator<GetBusJourneysRequestData> _validator;
 
-
-        public HomeController(IApiTransactionService apiTransactionService, IHttpContextAccessor httpcontextAccessor)
+        public HomeController(IApiTransactionService apiTransactionService, IHttpContextAccessor httpcontextAccessor, IValidator<GetBusJourneysRequestData> validator)
         {
             _apiTransactionService = apiTransactionService;
-
+            _validator = validator;
         }
 
 
 
         public async Task<IActionResult> Index()
         {
-
+            #region Session
+            //Session bilgisini default formatta tuttum. Senaryo gereði uygulamamýz yopun trafikli bir uygulama ise sessionlarý Inmemomy olarak sunucu üzerinde tutmak sunucuyu gereksiz þiþireceði için pek faydalý olmayacaktýr. Böyle bir senaryoda sessionlarýmýzý redis üzerinde tutmayý önerebilirim. 
+            #endregion
             var result = await _apiTransactionService.GetSession();
             if (HttpContext.Session.Get<GetSessionViewModel>("SessionId") is null)
             {
@@ -64,7 +68,7 @@ namespace OBiletTask.MVC.Controllers
                 }
             };
             var response = await _apiTransactionService.GetAllBusLocations(getallBusLocationRequestModel);
-            
+
             if (response.Status == ApiResponseStatusEnums.Success.ToString())
             {
                 return Json(new { failed = false, data = response.Data });
@@ -75,7 +79,7 @@ namespace OBiletTask.MVC.Controllers
                 return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
 
             }
-             
+
 
         }
         [HttpPost]
@@ -114,7 +118,14 @@ namespace OBiletTask.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> GetBusJourneys(GetBusJourneysRequestData model)
         {
+         
+           //Backend tarafýnda request model validasyonu yapýldý.
+            FluentValidation.Results.ValidationResult result = await _validator.ValidateAsync(model);
+            if (!result.IsValid)
+            {
 
+                return Json(new { failed = true, message = result.Errors.FirstOrDefault()?.ErrorMessage }); ;
+            }
             var getSession = HttpContext.Session.Get<GetSessionViewModel>("SessionId");
             if (getSession is null)
             {
