@@ -21,22 +21,22 @@
         });
     }
 }
-// Tarih bugün ve yarından farklı seçilirse.
+
+ // Tarih bugün ve yarından farklı seçilirse.
 $('#datepicker').datepicker({
-    language: 'tr', // Türkçe dil desteği ekleniyor
-    autoclose: true, // Tarih seçildiğinde datepicker'ı otomatik olarak kapatmak için
-    startDate: 'today' // Yarının tarihini varsayılan olarak seçiyor
+    language: 'tr', 
+    autoclose: true, 
+    startDate: 'today' 
 }).on('changeDate', function (e) {
 
     var selectedDate = moment(e.format(), 'DD.MM.YYYY');
 
-    // Bugünkü tarihi al
     var today = moment().startOf('day');
 
-    // Yarının tarihini al
+
     var tomorrow = moment().add(1, 'days').startOf('day');
 
-    // Seçilen tarihin bugün veya yarın olup olmadığını kontrol et
+
     if (selectedDate.isSame(today, 'day')) {
         $("#today").prop("checked", true);
     } else if (selectedDate.isSame(tomorrow, 'day')) {
@@ -48,15 +48,16 @@ $('#datepicker').datepicker({
 });
 
 
+
 function datepickerInit() {
-    // Yarının tarihini al
+
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     $('#datepicker').datepicker({
-        language: 'tr', // Türkçe dil desteği ekleniyor
-        autoclose: true, // Tarih seçildiğinde datepicker'ı otomatik olarak kapatmak için
-        startDate: 'today' // Yarının tarihini varsayılan olarak seçiyor
+        language: 'tr', 
+        autoclose: true, 
+        startDate: 'today' 
     });
 
     // Bugün ve Yarın radio düğmelerine tıklandığında ilgili tarih seçilsin
@@ -67,9 +68,9 @@ function datepickerInit() {
     $('#tomorrow').click(function () {
         $('#datepicker').datepicker('setDate', tomorrow);
     });
-    // Varsayılan olarak yarın radio düğmesini seçili hale getir
+
     document.getElementById('tomorrow').checked = true;
-    // Yarının tarihini vurgulamak için
+
     $('#datepicker').datepicker('setDate', tomorrow);
     $("#datepicker").prop('readonly', true);
 }
@@ -158,7 +159,7 @@ $(document).ready(function () {
     if (storageData != null) {
 
 
-        // Listeye öğeyi ekleme işlemi
+
         var listItem = '<li class="list-group-item link-class" id="' + storageData.originId + '">';
         listItem += storageData.origin;
 
@@ -171,7 +172,7 @@ $(document).ready(function () {
 
 
 
-        // Listeye öğeyi ekleme işlemi
+
         var listItem2 = '<li class="list-group-item link-class" id="' + storageData.destinationId + '">';
         listItem2 += storageData.destination;
 
@@ -181,7 +182,22 @@ $(document).ready(function () {
         $("#destinationresult").hide();
         $('#destinationId').val(storageData.destinationId);
 
+        $("#datepicker").val(storageData.date);
+        var selectedDate = moment(storageData.date);
+        var today = moment();
+        var tomorrow = moment().add(1, 'days');
 
+        var radioButton = document.getElementById("radioButton");
+
+
+        if (selectedDate.isSame(today, 'day') || selectedDate.isSame(tomorrow, 'day')) {
+            
+        } else {
+        
+            $("#today").prop("checked", false);
+            $("#tomorrow").prop("checked", false);
+        }
+ 
 
     } else {
         $.ajax({
@@ -207,7 +223,7 @@ $(document).ready(function () {
                 $.each(d.data, function (index, item) {
 
 
-                    // Listeye öğeyi ekleme işlemi
+
                     var listItem = '<li class="list-group-item link-class" id="' + item.id + '">';
                     listItem += item.name;
 
@@ -253,9 +269,9 @@ $(document).ready(function () {
 
 
 });
-//origin Search
+//Kalkış noktası arama işlemi
 $('#origin').on('input', function () {
-    // Input alanına herhangi bir yazı yazıldığında tetiklenir
+
     var searchText = $(this).val();
 
 
@@ -276,7 +292,7 @@ $('#origin').on('input', function () {
 
 
 
-                // Listeye öğeyi ekleme işlemi
+
                 var listItem = '<li class="list-group-item link-class" id="' + item.id + '">';
                 listItem += item.name;
 
@@ -311,9 +327,9 @@ $('#origin').on('input', function () {
 });
 
 
-//Destination Search
+//Varış noktası arama işlemi
 $('#destination').on('input', function () {
-    // Input alanına herhangi bir yazı yazıldığında tetiklenir
+
     var searchText = $(this).val();
 
 
@@ -333,7 +349,6 @@ $('#destination').on('input', function () {
             $.each(d.data, function (index, item) {
 
 
-                // Listeye öğeyi ekleme işlemi
                 var listItem = '<li class="list-group-item link-class" id="' + item.id + '">';
                 listItem += item.name;
 
@@ -372,7 +387,7 @@ function GetBusJourneys() {
     var destinationId = $("#destinationId").val();
     var destinationName = $("#destination").val();
     var date = $("#datepicker").val();
-
+    debugger;
     if (originId != "" && destinationId != "" && date != "") {
 
 
@@ -385,9 +400,11 @@ function GetBusJourneys() {
             date: date,
 
         };
+
+        //Arama sonuçlarını client tarafında localStorage'de tuttum.
         localStorage.setItem("SearchedJourneyData", JSON.stringify(SearchedJourneyData));
 
-        //window.location.href = '@Url.Action("JourneyList", "Home")';
+
         window.location.href = '/Home/Journeys';
     } else {
         swal({

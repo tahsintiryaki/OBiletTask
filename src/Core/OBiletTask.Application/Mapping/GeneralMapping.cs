@@ -16,6 +16,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OBiletTask.Application.Mapping
 {
+    /// <summary>
+    ///UI tarafına sadece ihtiyacım olan verileri dönebilmek  için Viewmodel kullandım. Api den dönen response modelini Viewmodel'e dönüştürebilmek için ise AutoMapper kütüphanesinden faydalandım.
+    /// </summary>
     public class GeneralMapping : Profile
     {
         public GeneralMapping()

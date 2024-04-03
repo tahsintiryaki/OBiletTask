@@ -14,16 +14,14 @@ namespace OBiletTask.MVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            #region SErviceRegistration
+            
+            #region ServiceRegistration
             builder.Services.AddInfrastructureServices();
             builder.Services.AddApplicationRegistration();
 
             #endregion
             #region Serilog
-            //Add support to logging with SERILOG
-            //builder.Host.UseSerilog((context, configuration) =>
-            //    configuration.ReadFrom.Configuration(context.Configuration));
-
+          
             Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
                 .WriteTo.File("Log/logFile.txt", rollingInterval: RollingInterval.Day).CreateLogger();
             builder.Services.AddLogging(loggingBuilder =>
@@ -54,7 +52,8 @@ namespace OBiletTask.MVC
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-
+            //NotFoundPage configuration was actived
+            app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage", "?statuscode={0}");
 
             app.UseAuthorization();
 

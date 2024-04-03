@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewData["Title"] = "NotFoundPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ 
+<div class="container">
+	<div><h1>@(ViewBag.StatusCode != null ? ViewBag.StatusCode : "404")</h1></div>
+
+	<div><h3>Not Found Page</h3></div>
+    <button class="btn btn-primary" onclick="history.back();">Geri </button>
+ 
+
+</div>

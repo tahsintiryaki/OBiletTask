@@ -11,7 +11,7 @@ namespace OBiletTask.Application.Validator.GetBusLocations
     public class GetBusJourneysRequestDataValidator: AbstractValidator<GetBusJourneysRequestData>
     {
         /// <summary>
-        /// Backend tarafındaki validasyonlarımı Fluent Validation kullanarak yaptım.
+        /// Client Side tarafında yapılan kontrollere ek olarak backend tarafındaki kontrollerimi FluentValidation kullanarak yaptım.
         /// </summary>
         public GetBusJourneysRequestDataValidator()
         {

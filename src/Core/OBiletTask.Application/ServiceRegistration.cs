@@ -12,15 +12,17 @@ using System.Threading.Tasks;
 
 namespace OBiletTask.Application
 {
+    /// <summary>
+    ///Program.cs'in daha okunaklı olması için her katmanda geliştirilen kodların ihtiyaç duyduğu konfigürasyonları static bir class ile yönettim. 
+    /// </summary>
     public static class ServiceRegistration
     {
-        //We write to define AutoMapper and MediatR and call them in Program.cs in UI project.
+      
         public static void AddApplicationRegistration(this IServiceCollection services)
         {
             var assm = Assembly.GetExecutingAssembly();
-
             services.AddAutoMapper(assm);
-            // Register FluentValidation validator with Service Provider.
+ 
             services.AddScoped<IValidator<GetBusJourneysRequestData>, GetBusJourneysRequestDataValidator>();
 
 

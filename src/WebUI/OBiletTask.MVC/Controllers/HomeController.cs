@@ -22,7 +22,9 @@ namespace OBiletTask.MVC.Controllers
 {
     public class HomeController : Controller
     {
-
+        /// <summary>
+        /// Proje içerisindeki baðýmlýlýklarý minimize etmek için DI kullandým.
+        /// </summary>
         private readonly IApiTransactionService _apiTransactionService;
         private IValidator<GetBusJourneysRequestData> _validator;
 
@@ -37,7 +39,7 @@ namespace OBiletTask.MVC.Controllers
         public async Task<IActionResult> Index()
         {
             #region Session
-            //Session bilgisini default formatta tuttum. Senaryo gereði uygulamamýz yopun trafikli bir uygulama ise sessionlarý Inmemomy olarak sunucu üzerinde tutmak sunucuyu gereksiz þiþireceði için pek faydalý olmayacaktýr. Böyle bir senaryoda sessionlarýmýzý redis üzerinde tutmayý önerebilirim. 
+            //Session bilgisini default formatta tuttum. Senaryo gereði uygulamamýz yoðun trafikli bir uygulama ise sessionlarý In memomy olarak sunucu üzerinde tutmak sunucuyu gereksiz þiþireceði için pek faydalý olmayacaktýr. Böyle bir senaryoda sessionlarýmýzý redis üzerinde saklayabiliriz. 
             #endregion
             var result = await _apiTransactionService.GetSession();
             if (HttpContext.Session.Get<GetSessionViewModel>("SessionId") is null)
@@ -63,7 +65,6 @@ namespace OBiletTask.MVC.Controllers
                 DeviceSession = new DeviceSession()
                 {
                     deviceid = getSession.deviceid,
-                    //deviceid = string.Empty,
                     sessionid = getSession.sessionid,
                 }
             };
@@ -158,6 +159,15 @@ namespace OBiletTask.MVC.Controllers
         }
         public IActionResult Journeys()
         {
+            return View();
+        }
+        public IActionResult NotFoundPage(int statuscode)
+        {
+
+            if (statuscode > 0)
+            {
+                ViewBag.StatusCode = statuscode;
+            }
             return View();
         }
     }

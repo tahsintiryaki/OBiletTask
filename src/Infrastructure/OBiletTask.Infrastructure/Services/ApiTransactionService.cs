@@ -27,7 +27,7 @@ using OBiletTask.Application.Interface.Repositories;
 namespace OBiletTask.Infrastructure.Services
 {
     /// <summary>
-    ///Repositorydeki metodlara istekte bulunmadan önce iş kurallarını varsa bu kurallar service tarafında kontrol edilecektir.
+    ///Repositorydeki metodlara istekte bulunmadan önce iş kuralları burada kontrol edilecektir.
     /// </summary>
     public class ApiTransactionService : IApiTransactionService
     {
