@@ -23,7 +23,7 @@ namespace OBiletTask.MVC.Controllers
     public class HomeController : Controller
     {
         /// <summary>
-        /// Proje içerisindeki baðýmlýlýklarý minimize etmek için DI kullandým.
+        /// Proje iï¿½erisindeki baï¿½ï¿½mlï¿½lï¿½klarï¿½ minimize etmek iï¿½in DI kullandï¿½m.
         /// </summary>
         private readonly IApiTransactionService _apiTransactionService;
         private IValidator<GetBusJourneysRequestData> _validator;
@@ -39,7 +39,7 @@ namespace OBiletTask.MVC.Controllers
         public async Task<IActionResult> Index()
         {
             #region Session
-            //Session bilgisini default formatta tuttum. Senaryo gereði uygulamamýz yoðun trafikli bir uygulama ise sessionlarý In memomy olarak sunucu üzerinde tutmak sunucuyu gereksiz þiþireceði için pek faydalý olmayacaktýr. Böyle bir senaryoda sessionlarýmýzý redis üzerinde saklayabiliriz. 
+            //Session bilgisini default formatta tuttum. Senaryo gereï¿½i uygulamamï¿½z yoï¿½un trafikli bir uygulama ise sessionlarï¿½ In memomy olarak sunucu ï¿½zerinde tutmak sunucuyu gereksiz ï¿½iï¿½ireceï¿½i iï¿½in pek faydalï¿½ olmayacaktï¿½r. Bï¿½yle bir senaryoda sessionlarï¿½mï¿½zï¿½ redis ï¿½zerinde saklayabiliriz. 
             #endregion
             var result = await _apiTransactionService.GetSession();
             if (HttpContext.Session.Get<GetSessionViewModel>("SessionId") is null)
@@ -55,7 +55,7 @@ namespace OBiletTask.MVC.Controllers
             var getSession = HttpContext.Session.Get<GetSessionViewModel>("SessionId");
             if (getSession is null)
             {
-                return Json(new { failed = true, message = "User Session Not Found" });
+                return Json(new { failed = true, message = "User Session Not Found." });
             }
             CommonRequestModel<object> getallBusLocationRequestModel = new()
             {
@@ -77,7 +77,7 @@ namespace OBiletTask.MVC.Controllers
             }
             else
             {
-                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafï¿½nda hata oluï¿½tu." : response.UserMessage) });
 
             }
 
@@ -112,7 +112,7 @@ namespace OBiletTask.MVC.Controllers
             }
             else
             {
-                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafï¿½nda hata oluï¿½tu." : response.UserMessage) });
 
             }
         }
@@ -120,7 +120,7 @@ namespace OBiletTask.MVC.Controllers
         public async Task<IActionResult> GetBusJourneys(GetBusJourneysRequestData model)
         {
          
-           //Backend tarafýnda request model validasyonu yapýldý.
+           //Backend tarafï¿½nda request model validasyonu yapï¿½ldï¿½.
             FluentValidation.Results.ValidationResult result = await _validator.ValidateAsync(model);
             if (!result.IsValid)
             {
@@ -151,7 +151,7 @@ namespace OBiletTask.MVC.Controllers
             }
             else
             {
-                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafýnda hata oluþtu." : response.UserMessage) });
+                return Json(new { failed = true, message = (response.UserMessage is null ? "Api tarafï¿½nda hata oluï¿½tu." : response.UserMessage) });
 
             }
 
