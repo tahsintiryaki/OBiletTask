@@ -28,6 +28,7 @@ namespace OBiletTask.MVC
         loggingBuilder.AddSerilog(dispose: true)
     );
 
+            
             builder.Host.UseSerilog();
             #endregion
 
